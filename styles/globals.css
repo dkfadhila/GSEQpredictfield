@@ -1,0 +1,30 @@
+/* styles/globals.css */
+html,
+body {
+  padding: 0;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  line-height: 1.6;
+  font-size: 16px; /* Ukuran font dasar */
+  background-color: #f4f7f9; /* Warna latar default untuk seluruh halaman jika container tidak menutupinya */
+  color: #333;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  color: #1abc9c; /* Warna link default */
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}

@@ -47,7 +47,13 @@ export default function LandAllocationCalculatorPage() {
 
     const L_pabrik_dan_oxyfuel = pabrikOxyfuelPercentage * L_total_input;
     const L_dac = dacPercentage * L_total_input;
-    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000;
+    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000; // Asumsi 4000 ton/ha/tahun untuk pilot/demo
+    
+    // Perkiraan Jumlah Unit DAC (BARU)
+    // Asumsi 1 unit kolektor DAC modular menangkap sekitar 450 ton CO2/tahun
+    const Kapasitas_per_Unit_DAC = 450; 
+    const Jumlah_Unit_DAC = Kapasitas_DAC_ton_CO2_per_tahun > 0 ? Math.round(Kapasitas_DAC_ton_CO2_per_tahun / Kapasitas_per_Unit_DAC) : 0;
+
     const L_ccus_total = ccusTotalPercentage * L_total_input;
     const L_infrastruktur = infrastrukturPercentage * L_total_input;
 
@@ -57,6 +63,12 @@ export default function LandAllocationCalculatorPage() {
     const L_setiap_gedung_sub_ccus = L_total_gedung_sub_ccus / 4;
     const L_panel_surya_di_ccus = 0.25 * L_ccus_total;
     const L_ccus_outdoor = L_ccus_total - L_total_bangunan_ccus - L_panel_surya_di_ccus;
+
+    // Perkiraan Kapasitas Panel Surya (BARU)
+    // Asumsi 1 hektar lahan panel surya dapat menghasilkan sekitar 0.8 MWp (Megawatt-peak)
+    const MWp_per_Hektar_Surya = 0.8; 
+    const Kapasitas_Panel_Surya_MWp = L_panel_surya_di_ccus * MWp_per_Hektar_Surya;
+
 
     const location_considerations = {
       pabrik_oxyfuel: [
@@ -98,11 +110,13 @@ export default function LandAllocationCalculatorPage() {
       L_pabrik_dan_oxyfuel,
       L_dac,
       Kapasitas_DAC_ton_CO2_per_tahun,
+      Jumlah_Unit_DAC, // BARU
       L_ccus_total,
       L_total_bangunan_ccus,
       L_gedung_utama_ccus,
       L_setiap_gedung_sub_ccus,
       L_panel_surya_di_ccus,
+      Kapasitas_Panel_Surya_MWp, // BARU
       L_ccus_outdoor,
       L_infrastruktur,
       location_considerations
@@ -151,6 +165,7 @@ export default function LandAllocationCalculatorPage() {
               <h3>Direct Air Capture (DAC)</h3>
               <p>Luas: <strong>{results.L_dac.toFixed(1)} ha</strong> (15%)</p>
               <p>Kapasitas CO₂: <strong>{results.Kapasitas_DAC_ton_CO2_per_tahun.toLocaleString()} ton/tahun</strong></p>
+              <p>Perkiraan Jumlah Unit Kolektor DAC: <strong>{results.Jumlah_Unit_DAC} unit</strong></p> {/* BARU */}
             </div>
             
             <div className="result-category">
@@ -160,7 +175,8 @@ export default function LandAllocationCalculatorPage() {
                 <li>Total Bangunan CCUS: {results.L_total_bangunan_ccus.toFixed(1)} ha</li>
                 <li>Gedung Utama: {results.L_gedung_utama_ccus.toFixed(1)} ha</li>
                 <li>Per Gedung Sub: {results.L_setiap_gedung_sub_ccus.toFixed(1)} ha</li>
-                <li>Panel Surya: {results.L_panel_surya_di_ccus.toFixed(1)} ha</li>
+                <li>Panel Surya (Luas Area): {results.L_panel_surya_di_ccus.toFixed(1)} ha</li>
+                <li>Perkiraan Kapasitas Panel Surya: <strong>{results.Kapasitas_Panel_Surya_MWp.toFixed(2)} MWp</strong></li> {/* BARU */}
                 <li>Area Outdoor CCUS: {results.L_ccus_outdoor.toFixed(1)} ha</li>
               </ul>
             </div>
@@ -172,7 +188,7 @@ export default function LandAllocationCalculatorPage() {
 
             <div className="location-considerations-section">
               <h2>Pertimbangan Lokasi Penting:</h2>
-              
+              {/* ... (bagian pertimbangan lokasi tidak berubah) ... */}
               <div className="result-category">
                 <h4>Pabrik & Oxyfuel:</h4>
                 <ul>{results.location_considerations.pabrik_oxyfuel.map((item, index) => <li key={`pabrik-${index}`}>{item}</li>)}</ul>
@@ -202,6 +218,7 @@ export default function LandAllocationCalculatorPage() {
         </div>
       </footer>
 
+      {/* JSX Styles tidak berubah dari versi sebelumnya */}
       <style jsx>{`
         .container {
           min-height: 100vh;

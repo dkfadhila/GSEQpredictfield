@@ -40,18 +40,62 @@ export default function LandAllocationCalculatorPage() {
       return;
     }
 
-    const L_pabrik_dan_oxyfuel = 0.50 * L_total_input;
-    const L_dac = 0.15 * L_total_input;
-    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000;
-    const L_ccus_total = 0.30 * L_total_input;
-    const L_infrastruktur = 0.05 * L_total_input;
+    // Persentase Alokasi BARU (sesuai permintaan)
+    const pabrikOxyfuelPercentage = 0.25; // Diubah dari 0.50
+    const dacPercentage = 0.15;           // Tetap
+    const ccusTotalPercentage = 0.55;     // Diubah dari 0.30
+    const infrastrukturPercentage = 0.05;  // Tetap
+                                         // Total = 25+15+55+5 = 100%
 
-    const L_total_bangunan_ccus = 0.20 * L_ccus_total;
-    const L_gedung_utama_ccus = 0.40 * L_total_bangunan_ccus;
+    const L_pabrik_dan_oxyfuel = pabrikOxyfuelPercentage * L_total_input;
+    const L_dac = dacPercentage * L_total_input;
+    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000; // Asumsi 4000 ton/ha/tahun
+    const L_ccus_total = ccusTotalPercentage * L_total_input;
+    const L_infrastruktur = infrastrukturPercentage * L_total_input;
+
+    // Pembagian Area di Dalam Zona CCUS (persentase internal CCUS tetap)
+    const L_total_bangunan_ccus = 0.20 * L_ccus_total; // 20% dari area CCUS untuk bangunan
+    const L_gedung_utama_ccus = 0.40 * L_total_bangunan_ccus; // 40% dari area bangunan CCUS untuk gedung utama
     const L_total_gedung_sub_ccus = 0.60 * L_total_bangunan_ccus;
-    const L_setiap_gedung_sub_ccus = L_total_gedung_sub_ccus / 4;
-    const L_panel_surya_di_ccus = 0.25 * L_ccus_total;
+    const L_setiap_gedung_sub_ccus = L_total_gedung_sub_ccus / 4; // Ada 4 gedung sub
+    const L_panel_surya_di_ccus = 0.25 * L_ccus_total; // 25% dari area CCUS untuk panel surya
     const L_ccus_outdoor = L_ccus_total - L_total_bangunan_ccus - L_panel_surya_di_ccus;
+
+    // Faktor Lokasi untuk Dipertimbangkan (BARU)
+    const location_considerations = {
+      pabrik_oxyfuel: [
+        "Ketersediaan dan kedekatan dengan bahan baku utama industri.",
+        "Akses ke infrastruktur transportasi (jalan, rel, pelabuhan) untuk logistik.",
+        "Ketersediaan pasokan energi yang stabil dan memadai.",
+        "Sumber daya air yang cukup untuk proses industri dan pendinginan.",
+        "Ketersediaan tenaga kerja terampil.",
+        "Peraturan zonasi dan perizinan lingkungan setempat."
+      ],
+      dac: [
+        "Kondisi iklim (suhu, kelembapan udara) yang optimal untuk teknologi DAC terpilih.",
+        "Akses ke sumber energi terbarukan atau rendah karbon yang besar dan berkelanjutan.",
+        "Biaya dan ketersediaan lahan yang sesuai.",
+        "Kedekatan dengan infrastruktur transportasi CO2 atau fasilitas pemanfaatan/penyimpanan.",
+        "Kualitas udara ambien (misalnya, tingkat polutan yang dapat mempengaruhi sorben)."
+      ],
+      ccus: [ // Menggabungkan penyimpanan & pemanfaatan untuk kesederhanaan di list ini
+        "Untuk Penyimpanan (Storage): Ketersediaan formasi geologis yang aman dan sesuai (misalnya, akuifer saline dalam, bekas lapangan migas).",
+        "Untuk Penyimpanan: Karakteristik geologi dan geofisika detail (kapasitas, integritas segel, risiko seismik).",
+        "Untuk Penyimpanan: Kedekatan dengan sumber CO2 untuk meminimalkan biaya pipa transportasi.",
+        "Untuk Pemanfaatan (Utilization): Kedekatan dengan pasar untuk produk berbasis CO2.",
+        "Untuk Pemanfaatan: Ketersediaan bahan baku pendamping (co-reactants) jika diperlukan.",
+        "Akses ke infrastruktur (listrik, air, jalan).",
+        "Perizinan, penerimaan masyarakat, dan analisis dampak lingkungan (AMDAL).",
+        "Hak atas tanah dan subsurface rights."
+      ],
+      panel_surya: [
+        "Tingkat irradiasi matahari (insolasi) yang tinggi di lokasi.",
+        "Ketersediaan lahan datar atau dengan kemiringan minimal dan bebas bayangan.",
+        "Kondisi tanah yang mendukung untuk instalasi struktur penyangga.",
+        "Kedekatan dan kemudahan akses ke jaringan listrik (grid) untuk interkoneksi.",
+        "Peraturan lokal terkait instalasi energi terbarukan."
+      ]
+    };
 
     setResults({
       L_total_input,
@@ -65,6 +109,7 @@ export default function LandAllocationCalculatorPage() {
       L_panel_surya_di_ccus,
       L_ccus_outdoor,
       L_infrastruktur,
+      location_considerations // Menyimpan pertimbangan lokasi
     });
   };
 
@@ -72,11 +117,11 @@ export default function LandAllocationCalculatorPage() {
     <div className="container">
       <Head>
         <title>Kalkulator Kasar Alokasi Lahan Ekosistem Karbon</title>
-        <meta name="description" content="Kalkulator perkiraan kasar untuk alokasi lahan ekosistem karbon berdasarkan total luas lahan." />
+        <meta name="description" content="Kalkulator perkiraan kasar untuk alokasi lahan ekosistem karbon berdasarkan total luas lahan, termasuk pertimbangan lokasi." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <header className="header-main"> {/* Mengganti nama kelas agar tidak konflik dengan .header di globals.css jika ada */}
+      <header className="header-main">
         <h1>Kalkulator Kasar Alokasi Lahan Ekosistem Karbon</h1>
         <p className="subtitle">Perkiraan ini sangat kasar dan bersifat ilustratif berdasarkan model proporsional.</p>
       </header>
@@ -102,19 +147,19 @@ export default function LandAllocationCalculatorPage() {
             <h2>Hasil Perkiraan Alokasi (Total Lahan: {results.L_total_input.toFixed(2)} ha):</h2>
             
             <div className="result-category">
-              <h3>Pabrik & Penangkapan Karbon Terintegrasi</h3>
-              <p>Luas Pabrik & Fasilitas Oxyfuel: <strong>{results.L_pabrik_dan_oxyfuel.toFixed(2)} ha</strong></p>
+              <h3>Pabrik & Penangkapan Karbon Terintegrasi (Oxyfuel)</h3>
+              <p>Luas Alokasi: <strong>{results.L_pabrik_dan_oxyfuel.toFixed(2)} ha</strong> (25% dari Total Lahan)</p>
             </div>
 
             <div className="result-category">
               <h3>Direct Air Capture (DAC)</h3>
-              <p>Luas Area DAC: <strong>{results.L_dac.toFixed(2)} ha</strong></p>
+              <p>Luas Alokasi: <strong>{results.L_dac.toFixed(2)} ha</strong> (15% dari Total Lahan)</p>
               <p>Perkiraan Kapasitas Penangkapan CO₂: <strong>{results.Kapasitas_DAC_ton_CO2_per_tahun.toLocaleString()} ton/tahun</strong></p>
             </div>
             
             <div className="result-category">
               <h3>Fasilitas CCUS (Carbon Capture, Utilization, and Storage)</h3>
-              <p>Luas Total Area CCUS: <strong>{results.L_ccus_total.toFixed(2)} ha</strong>, dengan rincian:</p>
+              <p>Luas Total Alokasi: <strong>{results.L_ccus_total.toFixed(2)} ha</strong> (55% dari Total Lahan), dengan rincian asumsi internal:</p>
               <ul>
                 <li>Total Luas Bangunan CCUS (1 Utama + 4 Sub): {results.L_total_bangunan_ccus.toFixed(2)} ha</li>
                 <li>Luas Gedung Utama CCUS: {results.L_gedung_utama_ccus.toFixed(2)} ha</li>
@@ -126,13 +171,54 @@ export default function LandAllocationCalculatorPage() {
 
             <div className="result-category">
               <h3>Infrastruktur Umum & Zona Penyangga</h3>
-              <p>Luas Area Infrastruktur: <strong>{results.L_infrastruktur.toFixed(2)} ha</strong></p>
+              <p>Luas Alokasi: <strong>{results.L_infrastruktur.toFixed(2)} ha</strong> (5% dari Total Lahan)</p>
+            </div>
+
+            {/* Bagian BARU untuk Pertimbangan Lokasi */}
+            <div className="location-considerations-section">
+              <h2>Faktor Lokasi Kritis untuk Dipertimbangkan:</h2>
+              
+              <div className="result-category">
+                <h4>Pabrik & Fasilitas Oxyfuel:</h4>
+                <ul>
+                  {results.location_considerations.pabrik_oxyfuel.map((item, index) => (
+                    <li key={`pabrik-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="result-category">
+                <h4>Direct Air Capture (DAC):</h4>
+                <ul>
+                  {results.location_considerations.dac.map((item, index) => (
+                    <li key={`dac-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="result-category">
+                <h4>Fasilitas CCUS (Penyimpanan & Pemanfaatan):</h4>
+                <ul>
+                  {results.location_considerations.ccus.map((item, index) => (
+                    <li key={`ccus-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="result-category">
+                <h4>Panel Surya (di Zona CCUS atau Terpisah):</h4>
+                <ul>
+                  {results.location_considerations.panel_surya.map((item, index) => (
+                    <li key={`solar-${index}`}>{item}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         )}
       </main>
 
-      <footer className="footer-main"> {/* Mengganti nama kelas */}
+      <footer className="footer-main">
         <p>Kalkulator ini bersifat ilustratif. Konsultasikan dengan ahli untuk perencanaan detail.</p>
         <div className="social-links">
           <a href="https://x.com/Vhaeyrin" target="_blank" rel="noopener noreferrer" title="Vhaeyrin on X" style={{ display: 'inline-block', marginRight: '0.5rem' }}>
@@ -144,7 +230,7 @@ export default function LandAllocationCalculatorPage() {
         </div>
       </footer>
 
-      {/* Minimalist JSX Styles (Anda bisa pindahkan ke globals.css jika preferensi) */}
+      {/* JSX Styles tidak berubah signifikan dari versi sebelumnya, hanya ditambahkan sedikit untuk section baru jika perlu */}
       <style jsx>{`
         .container {
           min-height: 100vh;
@@ -155,7 +241,7 @@ export default function LandAllocationCalculatorPage() {
           color: #333;
           background-color: #f4f7f9;
         }
-        .header-main { /* Nama kelas diubah */
+        .header-main {
           width: 100%;
           padding: 2rem 1rem;
           text-align: center;
@@ -166,10 +252,10 @@ export default function LandAllocationCalculatorPage() {
         .header-main h1 {
           margin: 0;
           line-height: 1.15;
-          font-size: 2.2rem; /* Sedikit disesuaikan */
+          font-size: 2.2rem;
         }
         .subtitle {
-          font-size: 0.9rem; /* Sedikit disesuaikan */
+          font-size: 0.9rem;
           color: #bdc3c7;
           margin-top: 0.5rem;
         }
@@ -225,6 +311,7 @@ export default function LandAllocationCalculatorPage() {
           border-radius: 8px;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           width: 100%;
+          margin-bottom: 2rem; /* Tambahan margin bawah untuk results section */
         }
         .results-section h2 {
           margin-top: 0;
@@ -240,6 +327,13 @@ export default function LandAllocationCalculatorPage() {
           margin-top: 1rem;
           margin-bottom: 0.5rem;
         }
+         /* Penyesuaian untuk judul kategori di bagian pertimbangan lokasi */
+        .location-considerations-section .result-category h4 {
+          color: #34495e;
+          margin-top: 1rem;
+          margin-bottom: 0.3rem;
+          font-size: 1.1em;
+        }
         .result-category p, .result-category ul {
           margin: 0.25rem 0;
           line-height: 1.6;
@@ -247,18 +341,31 @@ export default function LandAllocationCalculatorPage() {
         }
         .result-category ul {
           padding-left: 20px;
+          list-style-type: disc; /* Atau 'circle' */
+        }
+        .result-category ul li {
+          margin-bottom: 0.3rem;
         }
         .result-category strong {
           color: #1abc9c;
         }
-        .footer-main { /* Nama kelas diubah */
+        .location-considerations-section {
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #eaeaea;
+        }
+        .location-considerations-section h2 {
+            font-size: 1.5rem;
+            color: #2c3e50;
+        }
+        .footer-main {
           width: 100%;
           padding: 1.5rem 1rem;
           text-align: center;
           border-top: 1px solid #eaeaea;
           background-color: #2c3e50;
           color: #bdc3c7;
-          margin-top: auto; /* Mendorong footer ke bawah */
+          margin-top: auto;
         }
         .footer-main p {
             margin-bottom: 0.5rem;

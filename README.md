@@ -17,9 +17,9 @@ Sebuah aplikasi Next.js sederhana untuk memberikan perkiraan kasar alokasi lahan
 ## Model Perhitungan
 
 Kalkulator ini menggunakan model alokasi proporsional yang bersifat ilustratif dan sangat disederhanakan. Persentase alokasi utama yang digunakan (dapat diubah dalam kode):
-- Pabrik & Oxyfuel: 50%
+- Pabrik & Oxyfuel: 25%
 - DAC: 15%
-- CCUS: 30%
+- CCUS: 55%
 - Infrastruktur: 5%
 
 Estimasi kapasitas DAC juga bersifat kasar (misal, 4000 ton CO₂/tahun per hektar lahan DAC skala pilot/demonstrasi).

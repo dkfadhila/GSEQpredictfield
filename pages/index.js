@@ -40,28 +40,24 @@ export default function LandAllocationCalculatorPage() {
       return;
     }
 
-    // Persentase Alokasi BARU (sesuai permintaan)
-    const pabrikOxyfuelPercentage = 0.25; // Diubah dari 0.50
-    const dacPercentage = 0.15;           // Tetap
-    const ccusTotalPercentage = 0.55;     // Diubah dari 0.30
-    const infrastrukturPercentage = 0.05;  // Tetap
-                                         // Total = 25+15+55+5 = 100%
+    const pabrikOxyfuelPercentage = 0.25;
+    const dacPercentage = 0.15;          
+    const ccusTotalPercentage = 0.55;    
+    const infrastrukturPercentage = 0.05; 
 
     const L_pabrik_dan_oxyfuel = pabrikOxyfuelPercentage * L_total_input;
     const L_dac = dacPercentage * L_total_input;
-    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000; // Asumsi 4000 ton/ha/tahun
+    const Kapasitas_DAC_ton_CO2_per_tahun = L_dac * 4000;
     const L_ccus_total = ccusTotalPercentage * L_total_input;
     const L_infrastruktur = infrastrukturPercentage * L_total_input;
 
-    // Pembagian Area di Dalam Zona CCUS (persentase internal CCUS tetap)
-    const L_total_bangunan_ccus = 0.20 * L_ccus_total; // 20% dari area CCUS untuk bangunan
-    const L_gedung_utama_ccus = 0.40 * L_total_bangunan_ccus; // 40% dari area bangunan CCUS untuk gedung utama
+    const L_total_bangunan_ccus = 0.20 * L_ccus_total;
+    const L_gedung_utama_ccus = 0.40 * L_total_bangunan_ccus;
     const L_total_gedung_sub_ccus = 0.60 * L_total_bangunan_ccus;
-    const L_setiap_gedung_sub_ccus = L_total_gedung_sub_ccus / 4; // Ada 4 gedung sub
-    const L_panel_surya_di_ccus = 0.25 * L_ccus_total; // 25% dari area CCUS untuk panel surya
+    const L_setiap_gedung_sub_ccus = L_total_gedung_sub_ccus / 4;
+    const L_panel_surya_di_ccus = 0.25 * L_ccus_total;
     const L_ccus_outdoor = L_ccus_total - L_total_bangunan_ccus - L_panel_surya_di_ccus;
 
-    // Faktor Lokasi untuk Dipertimbangkan (BARU)
     const location_considerations = {
       pabrik_oxyfuel: [
         "Ketersediaan dan kedekatan dengan bahan baku utama industri.",
@@ -78,7 +74,7 @@ export default function LandAllocationCalculatorPage() {
         "Kedekatan dengan infrastruktur transportasi CO2 atau fasilitas pemanfaatan/penyimpanan.",
         "Kualitas udara ambien (misalnya, tingkat polutan yang dapat mempengaruhi sorben)."
       ],
-      ccus: [ // Menggabungkan penyimpanan & pemanfaatan untuk kesederhanaan di list ini
+      ccus: [
         "Untuk Penyimpanan (Storage): Ketersediaan formasi geologis yang aman dan sesuai (misalnya, akuifer saline dalam, bekas lapangan migas).",
         "Untuk Penyimpanan: Karakteristik geologi dan geofisika detail (kapasitas, integritas segel, risiko seismik).",
         "Untuk Penyimpanan: Kedekatan dengan sumber CO2 untuk meminimalkan biaya pipa transportasi.",
@@ -109,109 +105,89 @@ export default function LandAllocationCalculatorPage() {
       L_panel_surya_di_ccus,
       L_ccus_outdoor,
       L_infrastruktur,
-      location_considerations // Menyimpan pertimbangan lokasi
+      location_considerations
     });
   };
 
   return (
     <div className="container">
       <Head>
-        <title>Kalkulator Kasar Alokasi Lahan Ekosistem Karbon</title>
+        <title>Kalkulator Alokasi Lahan Ekosistem Karbon (Pastel)</title>
         <meta name="description" content="Kalkulator perkiraan kasar untuk alokasi lahan ekosistem karbon berdasarkan total luas lahan, termasuk pertimbangan lokasi." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <header className="header-main">
-        <h1>Kalkulator Kasar Alokasi Lahan Ekosistem Karbon</h1>
-        <p className="subtitle">Perkiraan ini sangat kasar dan bersifat ilustratif berdasarkan model proporsional.</p>
+        <h1>Estimasi Lahan Ekosistem Karbon</h1>
+        <p className="subtitle">Perkiraan ini sangat kasar & ilustratif.</p>
       </header>
 
       <main className="main-content">
         <div className="input-section">
-          <label htmlFor="totalLand">Masukkan Total Lahan (hektar):</label>
+          <label htmlFor="totalLand">Total Lahan (ha):</label>
           <input
             type="number"
             id="totalLand"
             value={totalLandInput}
             onChange={(e) => setTotalLandInput(e.target.value)}
-            placeholder="Contoh: 100"
+            placeholder="Mis: 100"
             className="input-field"
           />
           <button onClick={handleCalculate} className="calculate-button">
-            Hitung Alokasi
+            Hitung
           </button>
         </div>
 
         {results && (
           <div className="results-section">
-            <h2>Hasil Perkiraan Alokasi (Total Lahan: {results.L_total_input.toFixed(2)} ha):</h2>
+            <h2>Hasil Estimasi (Total: {results.L_total_input.toFixed(1)} ha):</h2>
             
             <div className="result-category">
-              <h3>Pabrik & Penangkapan Karbon Terintegrasi (Oxyfuel)</h3>
-              <p>Luas Alokasi: <strong>{results.L_pabrik_dan_oxyfuel.toFixed(2)} ha</strong> (25% dari Total Lahan)</p>
+              <h3>Pabrik & Oxyfuel Terintegrasi</h3>
+              <p>Luas: <strong>{results.L_pabrik_dan_oxyfuel.toFixed(1)} ha</strong> (25%)</p>
             </div>
 
             <div className="result-category">
               <h3>Direct Air Capture (DAC)</h3>
-              <p>Luas Alokasi: <strong>{results.L_dac.toFixed(2)} ha</strong> (15% dari Total Lahan)</p>
-              <p>Perkiraan Kapasitas Penangkapan CO₂: <strong>{results.Kapasitas_DAC_ton_CO2_per_tahun.toLocaleString()} ton/tahun</strong></p>
+              <p>Luas: <strong>{results.L_dac.toFixed(1)} ha</strong> (15%)</p>
+              <p>Kapasitas CO₂: <strong>{results.Kapasitas_DAC_ton_CO2_per_tahun.toLocaleString()} ton/tahun</strong></p>
             </div>
             
             <div className="result-category">
-              <h3>Fasilitas CCUS (Carbon Capture, Utilization, and Storage)</h3>
-              <p>Luas Total Alokasi: <strong>{results.L_ccus_total.toFixed(2)} ha</strong> (55% dari Total Lahan), dengan rincian asumsi internal:</p>
+              <h3>Fasilitas CCUS</h3>
+              <p>Luas Total: <strong>{results.L_ccus_total.toFixed(1)} ha</strong> (55%), asumsi internal:</p>
               <ul>
-                <li>Total Luas Bangunan CCUS (1 Utama + 4 Sub): {results.L_total_bangunan_ccus.toFixed(2)} ha</li>
-                <li>Luas Gedung Utama CCUS: {results.L_gedung_utama_ccus.toFixed(2)} ha</li>
-                <li>Luas per Gedung Sub CCUS: {results.L_setiap_gedung_sub_ccus.toFixed(2)} ha</li>
-                <li>Luas Area Panel Surya (di zona CCUS): {results.L_panel_surya_di_ccus.toFixed(2)} ha</li>
-                <li>Luas Area Outdoor CCUS (untuk proses, dll.): {results.L_ccus_outdoor.toFixed(2)} ha</li>
+                <li>Total Bangunan CCUS: {results.L_total_bangunan_ccus.toFixed(1)} ha</li>
+                <li>Gedung Utama: {results.L_gedung_utama_ccus.toFixed(1)} ha</li>
+                <li>Per Gedung Sub: {results.L_setiap_gedung_sub_ccus.toFixed(1)} ha</li>
+                <li>Panel Surya: {results.L_panel_surya_di_ccus.toFixed(1)} ha</li>
+                <li>Area Outdoor CCUS: {results.L_ccus_outdoor.toFixed(1)} ha</li>
               </ul>
             </div>
 
             <div className="result-category">
-              <h3>Infrastruktur Umum & Zona Penyangga</h3>
-              <p>Luas Alokasi: <strong>{results.L_infrastruktur.toFixed(2)} ha</strong> (5% dari Total Lahan)</p>
+              <h3>Infrastruktur Umum</h3>
+              <p>Luas: <strong>{results.L_infrastruktur.toFixed(1)} ha</strong> (5%)</p>
             </div>
 
-            {/* Bagian BARU untuk Pertimbangan Lokasi */}
             <div className="location-considerations-section">
-              <h2>Faktor Lokasi Kritis untuk Dipertimbangkan:</h2>
+              <h2>Pertimbangan Lokasi Penting:</h2>
               
               <div className="result-category">
-                <h4>Pabrik & Fasilitas Oxyfuel:</h4>
-                <ul>
-                  {results.location_considerations.pabrik_oxyfuel.map((item, index) => (
-                    <li key={`pabrik-${index}`}>{item}</li>
-                  ))}
-                </ul>
+                <h4>Pabrik & Oxyfuel:</h4>
+                <ul>{results.location_considerations.pabrik_oxyfuel.map((item, index) => <li key={`pabrik-${index}`}>{item}</li>)}</ul>
               </div>
-
               <div className="result-category">
                 <h4>Direct Air Capture (DAC):</h4>
-                <ul>
-                  {results.location_considerations.dac.map((item, index) => (
-                    <li key={`dac-${index}`}>{item}</li>
-                  ))}
-                </ul>
+                <ul>{results.location_considerations.dac.map((item, index) => <li key={`dac-${index}`}>{item}</li>)}</ul>
               </div>
-
               <div className="result-category">
-                <h4>Fasilitas CCUS (Penyimpanan & Pemanfaatan):</h4>
-                <ul>
-                  {results.location_considerations.ccus.map((item, index) => (
-                    <li key={`ccus-${index}`}>{item}</li>
-                  ))}
-                </ul>
+                <h4>Fasilitas CCUS:</h4>
+                <ul>{results.location_considerations.ccus.map((item, index) => <li key={`ccus-${index}`}>{item}</li>)}</ul>
               </div>
-
               <div className="result-category">
-                <h4>Panel Surya (di Zona CCUS atau Terpisah):</h4>
-                <ul>
-                  {results.location_considerations.panel_surya.map((item, index) => (
-                    <li key={`solar-${index}`}>{item}</li>
-                  ))}
-                </ul>
+                <h4>Panel Surya:</h4>
+                <ul>{results.location_considerations.panel_surya.map((item, index) => <li key={`solar-${index}`}>{item}</li>)}</ul>
               </div>
             </div>
           </div>
@@ -219,169 +195,177 @@ export default function LandAllocationCalculatorPage() {
       </main>
 
       <footer className="footer-main">
-        <p>Kalkulator ini bersifat ilustratif. Konsultasikan dengan ahli untuk perencanaan detail.</p>
+        <p>Model kalkulator ini hanya untuk ilustrasi.</p>
         <div className="social-links">
-          <a href="https://x.com/Vhaeyrin" target="_blank" rel="noopener noreferrer" title="Vhaeyrin on X" style={{ display: 'inline-block', marginRight: '0.5rem' }}>
-            <XLogo />
-          </a>
-          <a href="https://github.com/dkfadhila" target="_blank" rel="noopener noreferrer" title="dkfadhila on GitHub" style={{ display: 'inline-block' }}>
-            <GitHubLogo />
-          </a>
+          <a href="https://x.com/Vhaeyrin" target="_blank" rel="noopener noreferrer" title="Vhaeyrin on X"><XLogo /></a>
+          <a href="https://github.com/dkfadhila" target="_blank" rel="noopener noreferrer" title="dkfadhila on GitHub"><GitHubLogo /></a>
         </div>
       </footer>
 
-      {/* JSX Styles tidak berubah signifikan dari versi sebelumnya, hanya ditambahkan sedikit untuk section baru jika perlu */}
       <style jsx>{`
         .container {
           min-height: 100vh;
-          padding: 0 0.5rem;
           display: flex;
           flex-direction: column;
           align-items: center;
-          color: #333;
-          background-color: #f4f7f9;
+          background-color: #FEFBF6; /* Pastel: Soft Cream */
+          color: #5C5470; /* Pastel: Muted Purple/Grey for text */
+          font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Clean sans-serif */
         }
         .header-main {
           width: 100%;
-          padding: 2rem 1rem;
+          padding: 1.5rem 1rem; /* Reduced padding */
           text-align: center;
-          background-color: #2c3e50;
-          color: white;
-          border-bottom: 5px solid #1abc9c;
+          background-color: #B9E0FF; /* Pastel: Soft Sky Blue */
+          color: #352F44; /* Darker Muted Purple for header text */
+          border-bottom: 3px solid #A2D2FF; /* Slightly darker blue accent */
         }
         .header-main h1 {
           margin: 0;
-          line-height: 1.15;
-          font-size: 2.2rem;
+          font-weight: 600; /* Slightly less bold */
+          font-size: 1.8rem; /* Adjusted size */
         }
         .subtitle {
-          font-size: 0.9rem;
-          color: #bdc3c7;
-          margin-top: 0.5rem;
+          font-size: 0.85rem;
+          color: #5C5470; /* Muted text color */
+          margin-top: 0.3rem;
         }
         .main-content {
-          padding: 2rem 1rem;
+          padding: 1.5rem 1rem; /* Reduced padding */
           flex: 1;
           display: flex;
           flex-direction: column;
           align-items: center;
           width: 100%;
-          max-width: 800px;
+          max-width: 700px; /* Slightly narrower for minimalist feel */
         }
         .input-section {
-          background-color: white;
-          padding: 1.5rem;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          margin-bottom: 2rem;
+          background-color: #FFFFFF;
+          padding: 1.2rem; /* Reduced padding */
+          border-radius: 12px; /* Softer corners */
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); /* Softer shadow */
+          margin-bottom: 1.5rem;
           width: 100%;
           display: flex;
           flex-wrap: wrap;
-          gap: 1rem;
+          gap: 0.8rem;
           align-items: center;
+          border: 1px solid #EAE0DA; /* Soft border */
         }
         .input-section label {
-          font-weight: bold;
-          flex-basis: 100%; 
+          font-weight: 500; /* Lighter font weight */
+          font-size: 0.9rem;
+          flex-basis: 100%;
         }
         .input-field {
-          padding: 0.75rem;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          font-size: 1rem;
+          padding: 0.6rem 0.8rem; /* Adjusted padding */
+          border: 1px solid #DCD0C0; /* Softer border */
+          border-radius: 8px; /* Softer corners */
+          font-size: 0.95rem;
           flex-grow: 1;
-          min-width: 150px;
+          min-width: 120px;
+          background-color: #FFFBF6; /* Very light cream */
         }
         .calculate-button {
-          padding: 0.75rem 1.5rem;
-          background-color: #1abc9c;
-          color: white;
+          padding: 0.6rem 1.2rem; /* Adjusted padding */
+          background-color: #A2D2FF; /* Pastel: Soft Blue */
+          color: #352F44; /* Darker text for contrast */
           border: none;
-          border-radius: 4px;
-          font-size: 1rem;
+          border-radius: 8px;
+          font-size: 0.95rem;
+          font-weight: 500;
           cursor: pointer;
           transition: background-color 0.2s ease;
+          box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .calculate-button:hover {
-          background-color: #16a085;
+          background-color: #B9E0FF; /* Lighter blue on hover */
         }
         .results-section {
-          background-color: white;
-          padding: 1.5rem;
-          border-radius: 8px;
-          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          background-color: #FFFFFF;
+          padding: 1.2rem;
+          border-radius: 12px;
+          box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
           width: 100%;
-          margin-bottom: 2rem; /* Tambahan margin bawah untuk results section */
+          margin-bottom: 1.5rem;
+          border: 1px solid #EAE0DA;
         }
         .results-section h2 {
           margin-top: 0;
-          color: #2c3e50;
-          border-bottom: 2px solid #eee;
+          margin-bottom: 1rem; /* More space after H2 */
+          color: #352F44;
+          border-bottom: 1px solid #A2D2FF; /* Soft blue accent */
           padding-bottom: 0.5rem;
+          font-size: 1.3rem; /* Adjusted size */
+          font-weight: 600;
         }
         .result-category {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1rem; /* Adjusted spacing */
         }
         .result-category h3 {
-          color: #34495e;
-          margin-top: 1rem;
-          margin-bottom: 0.5rem;
+          color: #5C5470;
+          margin-top: 0.8rem;
+          margin-bottom: 0.4rem;
+          font-size: 1.1rem; /* Adjusted size */
+          font-weight: 600;
         }
-         /* Penyesuaian untuk judul kategori di bagian pertimbangan lokasi */
         .location-considerations-section .result-category h4 {
-          color: #34495e;
-          margin-top: 1rem;
+          color: #5C5470;
+          margin-top: 0.8rem;
           margin-bottom: 0.3rem;
-          font-size: 1.1em;
+          font-size: 1rem; /* Adjusted size */
+          font-weight: 600;
         }
         .result-category p, .result-category ul {
-          margin: 0.25rem 0;
-          line-height: 1.6;
-          font-size: 0.95rem;
+          margin: 0.2rem 0;
+          line-height: 1.5; /* Adjusted line height */
+          font-size: 0.9rem; /* Slightly smaller text */
         }
         .result-category ul {
-          padding-left: 20px;
-          list-style-type: disc; /* Atau 'circle' */
+          padding-left: 18px; /* Slightly less padding */
+          list-style-type: circle; /* Softer list style */
         }
         .result-category ul li {
-          margin-bottom: 0.3rem;
+          margin-bottom: 0.25rem;
         }
         .result-category strong {
-          color: #1abc9c;
+          color: #A2D2FF; /* Pastel: Soft Blue for emphasis */
+          font-weight: 600;
         }
         .location-considerations-section {
-            margin-top: 2rem;
+            margin-top: 1.5rem;
             padding-top: 1rem;
-            border-top: 1px solid #eaeaea;
+            border-top: 1px solid #EAE0DA; /* Soft border */
         }
         .location-considerations-section h2 {
-            font-size: 1.5rem;
-            color: #2c3e50;
+            font-size: 1.3rem;
+            color: #352F44;
         }
         .footer-main {
           width: 100%;
-          padding: 1.5rem 1rem;
+          padding: 1rem; /* Reduced padding */
           text-align: center;
-          border-top: 1px solid #eaeaea;
-          background-color: #2c3e50;
-          color: #bdc3c7;
+          border-top: 1px solid #EAE0DA; /* Soft border */
+          background-color: #B9E0FF; /* Pastel: Soft Sky Blue */
+          color: #352F44; /* Darker text */
           margin-top: auto;
         }
         .footer-main p {
             margin-bottom: 0.5rem;
-            font-size: 0.85rem;
+            font-size: 0.8rem; /* Smaller footer text */
         }
         .social-links {
           display: flex;
           justify-content: center;
-          gap: 1rem;
+          gap: 1.2rem; /* Slightly more gap */
         }
         .social-links a {
-          color: white;
+          color: #352F44; /* Darker text for logos */
           transition: color 0.2s ease;
+          display: inline-block; /* Helps with SVG alignment */
         }
         .social-links a:hover {
-          color: #1abc9c;
+          color: #FEFBF6; /* Light cream on hover */
         }
 
         @media (min-width: 600px) {
@@ -389,8 +373,8 @@ export default function LandAllocationCalculatorPage() {
                 flex-basis: auto;
                 margin-bottom: 0;
             }
-            .header-main h1 { font-size: 2.5rem; }
-            .subtitle { font-size: 1rem; }
+            .header-main h1 { font-size: 2rem; }
+            .subtitle { font-size: 0.9rem; }
         }
       `}</style>
     </div>
